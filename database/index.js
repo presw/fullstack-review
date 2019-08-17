@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
-mongoose.createConnection('mongodb://localhost/fetcher', { useNewUrlParser: true });
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
+mongoose.connect('mongodb://localhost/fetcher', { useNewUrlParser: true });
 const db = mongoose.connection;
+
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-  console.log("CONNNNNNNNECTED");
+  console.log("Connected to MongoDB");
 });
 
 let repoSchema = mongoose.Schema({
-  id: Number,
+  id: { type: Number, unique: true },
   name: String,
   owner: String,
   description: String,
@@ -19,21 +22,24 @@ let repoSchema = mongoose.Schema({
 let Repo = mongoose.model('Repo', repoSchema);
 
 let save = (repo, callback) => {
-    let test = new Repo({
-      id: repo.id,
-      name: repo.name,
-      owner: repo.owner.name,
-      description: repo.description,
-      html_url: repo.html_url,
-      commits_url: repo.commits_url,
-      commits_quantity: repo.commits_quantity
-    })
-    console.log("HITTING SAVE");
-    test.save();
 
-  // TODO: Your code here
-  // This function should save a repo or repos to
-  // the MongoDB
+  let document = new Repo({
+    id: repo.id,
+    name: repo.name,
+    owner: repo.owner.name,
+    description: repo.description,
+    html_url: repo.html_url,
+    commits_url: repo.commits_url,
+    commits_quantity: repo.commits_quantity
+  })
+
+  document.save((err, repo) => {
+    if (err) {
+      return err;
+    }
+    return repo;
+  });
+
 }
 
 module.exports.save = save;

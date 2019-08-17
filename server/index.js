@@ -8,12 +8,12 @@ app.use(express.static(__dirname + '/../client/dist'));
 app.use(express.urlencoded({ extended: true }));
 
 app.post('/repos', (req, res) => {
-  console.log('POST REQUUUUEST INCOMING');
-  console.log('REQ BODY', req.body.username);
+  // Get all repos for provided username
   gh.getReposByUsername(req.body.username, (err, data) => {
     if (err) {
       return (err, null);
     }
+    // For every repo, get the number of commits to that repo
     let repoArray = JSON.parse(data);
     for (let i = 0; i < repoArray.length; i++) {
       let repo = repoArray[i];
@@ -22,30 +22,21 @@ app.post('/repos', (req, res) => {
         if (err) {
           return (err, null);
         }
+        // Parse the data into an object, then save to DB
         let parsedData = JSON.parse(data);
-        console.log('LENGTH:', parsedData.length); // number of commits
         repo.commits_quantity = parsedData.length;
-        db.save(repo)
-
+        db.save(repo, (err, data) => {
+          if (err) {
+            return err;
+          }
+          return data;
+        });
       })
     }
     var test = JSON.parse(data);
-    console.log('BLOOM', Array.isArray(test));
   })
   res.end();
-  // TODO - your code here!
-  // This route should take the github username provided
-  // and get the repo information from the github API, then
-  // save the repo information in the database
 
-  // Steps:
-  // Take provided username from request
-  // Send to Github API
-  // GET data from API
-    // iterate through data
-      // GET commit data from API for each repo
-        // NOTE: Use Promise.all() on an array of the GETs?
-        // SAVE data to database
 });
 
 app.get('/repos', (req, res) => {
@@ -58,4 +49,3 @@ let port = 1128;
 app.listen(port, function() {
   console.log(`listening on port ${port}`);
 });
-
