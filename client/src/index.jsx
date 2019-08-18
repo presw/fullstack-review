@@ -10,13 +10,19 @@ class App extends React.Component {
     this.state = {
       repos: []
     }
-
+    this.search = this.search.bind(this);
   }
 
   search (term) {
-    console.log(`${term} was searched`);
-    $.post('/repos', { username: term }, (data) => {
-      console.log('Data', data);
+    // console.log(`${term} was searched`);
+    // $.post('/repos', { username: term }, (err, data) => {
+    //   console.log('ERRRRROR:', err);
+    //   console.log('Posted to DB:', data);
+    // });
+    $.get('/repos', (data) => {
+      // NOTE: TODO: data can be used to setState for app
+      console.log("SEARCH DATA:", data);
+      return data;
     });
   }
 
@@ -24,7 +30,7 @@ class App extends React.Component {
     return (<div>
       <h1>Github Fetcher</h1>
       <RepoList repos={this.state.repos}/>
-      <Search onSearch={this.search.bind(this)}/>
+      <Search onSearch={this.search}/>
     </div>)
   }
 }

@@ -29,17 +29,21 @@ app.post('/repos', (req, res) => {
           if (err) {
             return err;
           }
-          return data;
+          res.end();
         });
       })
     }
-    var test = JSON.parse(data);
   })
   res.end();
-
 });
 
 app.get('/repos', (req, res) => {
+  db.get((err, data) => {
+    if (err) {
+      return err;
+    }
+    res.json(data);
+  });
   // TODO - your code here!
   // This route should send back the top 25 repos
 });
