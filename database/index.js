@@ -8,7 +8,7 @@ db.on('error', console.error.bind( console, 'connection error:' ));
 db.once('open', () => { console.log("Connected to MongoDB" ); });
 
 let repoSchema = mongoose.Schema({
-  id: { type: Number, unique: true },
+  id: { type: Number, index: true, unique: true },
   name: String,
   owner: String,
   description: String,
@@ -33,19 +33,19 @@ let save = (repo, callback) => {
 
   document.save((err, repo) => {
     if (err) {
-      callback(err);
+      callback(err, null);
     }
-    callback(repo);
+    callback(null, repo);
   });
 }
 
 let get = (callback) => {
 
-  let data = Repo.find()
+  let data = Repo.find();
 
   Repo.find({}, (err, repos) => {
     if (err) {
-      callback(err);
+      callback(err, null);
     }
     callback(null, repos);
   })

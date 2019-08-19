@@ -11,6 +11,7 @@ app.post('/repos', (req, res) => {
   // Get all repos for provided username
   gh.getReposByUsername(req.body.username, (err, data) => {
     if (err) {
+      console.log(`ERROR: ${req.body.username} not found`);
       return (err, null);
     }
     // For every repo, get the number of commits to that repo
@@ -25,11 +26,16 @@ app.post('/repos', (req, res) => {
         // Parse the data into an object, then save to DB
         let parsedData = JSON.parse(data);
         repo.commits_quantity = parsedData.length;
+
         db.save(repo, (err, data) => {
           if (err) {
             return err;
           }
-          res.end();
+          db.get((err, data) => {
+            if (err) {
+              return err;
+            }
+          });
         });
       })
     }

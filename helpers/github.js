@@ -11,9 +11,11 @@ let getReposByUsername = (username, callback) => {
     }
   };
 
-  request(options, (error, response, body) => {
-    if (error) {
-      callback(error, null);
+  request(options, (err, res, body) => {
+    if (err) {
+      callback(err, null);
+    } else if (res.statusCode === 404) {
+      callback(res.statusCode);
     } else {
       callback(null, body);
     }
@@ -30,9 +32,9 @@ let getCommitsByRepo = (commitsUrl, callback) => {
     }
   };
 
-  request(options, (error, response, body) => {
-    if (error) {
-      callback(error, null)
+  request(options, (err, res, body) => {
+    if (err) {
+      callback(err, null);
     } else {
       callback(null, body);
     }
